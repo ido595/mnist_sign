@@ -9,7 +9,7 @@ import random
 import sklearn.preprocessing as pr
 
 # disable gpu
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force TF to use only the CPU
+#os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force TF to use only the CPU
 
 # params
 IMG_HEIGHT = 28
@@ -100,7 +100,7 @@ x_test = test[:, 1:].reshape(test.shape[0], 28, 28, 1).astype('float32')
 x_test = x_test / 255.0
 y_test = test[:, 0]
 
-# model = basic_CNN_model()
+#model = basic_CNN_model()
 model = basic_model()
 # model =smallerVGGNET_model()
 
@@ -125,15 +125,25 @@ cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                  save_weights_only=True,
                                                  verbose=1)
 
+# write text file
+model.save_weights(checkpoint_path.format(epoch=0))
+
 train_history = model.fit(x_train, y_train,
                           callbacks=[cp_callback],
                           validation_data=(x_test, y_test),
                           epochs=EPOCH, verbose=2)
-test_history = model.evaluate(x_test, y_test, verbose=2)
+
+# save simple data to text file
+# convert the history.history dict to a pandas DataFrame:
+hist_df = pd.DataFrame(train_history.history)
+
+# or save to csv:
+hist_csv_file = "res_" + model.name + "_" + str(EPOCH) +".csv"
+with open(hist_csv_file, mode='w') as f:
+    hist_df.to_csv(f)
 
 # plotting
 print("PLOTTING")
-
 
 def plot_image(i, predictions_array, true_label, img):
     predictions_array, true_label, img = predictions_array, true_label[i], img[i]
