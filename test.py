@@ -12,8 +12,7 @@ import sklearn.preprocessing as pr
 #os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force TF to use only the CPU
 
 # params
-IMG_HEIGHT = 28
-IMG_WIDTH = 28
+IMG_SIZE = 28
 SOFT_MAX = 25
 EPOCH = 10
 class_names = ["A", "B", "C", "D", "E", "F",
@@ -24,7 +23,7 @@ class_names = ["A", "B", "C", "D", "E", "F",
 
 def basic_CNN_model():
     _model = tf.keras.models.Sequential(name="basic_CNN")  # creating a sequential model for our CNN
-    _model.add(tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(IMG_HEIGHT, IMG_WIDTH, 1)))
+    _model.add(tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(IMG_SIZE, IMG_SIZE, 1)))
     _model.add(tf.keras.layers.MaxPooling2D((2, 2)))
     _model.add(tf.keras.layers.Conv2D(64, (3, 3), activation='relu'))
     _model.add(tf.keras.layers.MaxPooling2D((2, 2)))
@@ -41,7 +40,7 @@ def basic_CNN_model():
 
 def basic_model():
     return tf.keras.models.Sequential(name="basic_model", layers=[
-        tf.keras.layers.Flatten(input_shape=(IMG_HEIGHT, IMG_WIDTH, 1)),
+        tf.keras.layers.Flatten(input_shape=(IMG_SIZE, IMG_SIZE, 1)),
         tf.keras.layers.Dense(128, activation='relu'),
         tf.keras.layers.Dropout(0.2),
         tf.keras.layers.Dense(SOFT_MAX, activation='softmax')
@@ -52,7 +51,7 @@ def smaller_VGGNET_model():
     _model = tf.keras.models.Sequential(name="smaller_VGGNET")
     # CONV => RELU => POOL
     _model.add(  # padding = "same" results in padding the input such that the output has the same length
-        tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=(IMG_HEIGHT, IMG_WIDTH, 1)))
+        tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=(IMG_SIZE, IMG_SIZE, 1)))
     _model.add(tf.keras.layers.BatchNormalization(axis=-1))
     _model.add(tf.keras.layers.MaxPooling2D((2, 2)))
     _model.add(tf.keras.layers.Dropout(0.25))
@@ -91,12 +90,12 @@ train = pd.read_csv("sign_mnist_train/sign_mnist_train.csv").values
 test = pd.read_csv("sign_mnist_test/sign_mnist_test.csv").sample(frac=1).reset_index(drop=True).values
 
 # Reshape and normalize training data
-x_train = train[:, 1:].reshape(train.shape[0], 28, 28, 1).astype('float32')
+x_train = train[:, 1:].reshape(train.shape[0], IMG_SIZE, IMG_SIZE, 1).astype('float32')
 x_train = x_train / 255.0
 y_train = train[:, 0]
 
 # Reshape and normalize test data
-x_test = test[:, 1:].reshape(test.shape[0], 28, 28, 1).astype('float32')
+x_test = test[:, 1:].reshape(test.shape[0], IMG_SIZE, IMG_SIZE, 1).astype('float32')
 x_test = x_test / 255.0
 y_test = test[:, 0]
 
@@ -151,7 +150,7 @@ def plot_image(i, predictions_array, true_label, img):
     plt.xticks([])
     plt.yticks([])
 
-    plt.imshow(img.reshape(IMG_WIDTH, IMG_HEIGHT), cmap=plt.cm.binary)
+    plt.imshow(img.reshape(IMG_SIZE, IMG_SIZE), cmap=plt.cm.binary)
 
     predicted_label = np.argmax(predictions_array)
     if predicted_label == true_label:
