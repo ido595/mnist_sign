@@ -9,12 +9,11 @@ import random
 import sklearn.preprocessing as pr
 
 # disable gpu
-#os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force TF to use only the CPU
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force TF to use only the CPU
 
 # params
 IMG_SIZE = 28
 SOFT_MAX = 25
-EPOCH = 10
 class_names = ["A", "B", "C", "D", "E", "F",
                "G", "H", "I", "K", "L", "M",
                "N", "O", "P", "Q", "R", "S",
@@ -87,7 +86,7 @@ def smaller_VGGNET_model():
 
 # Read training and test data files
 train = pd.read_csv("sign_mnist_train/sign_mnist_train.csv").values
-test = pd.read_csv("sign_mnist_test/sign_mnist_test.csv").sample(frac=1).reset_index(drop=True).values
+test = pd.read_csv("sign_mnist_test/sign_mnist_test.csv").values
 
 # Reshape and normalize training data
 x_train = train[:, 1:].reshape(train.shape[0], IMG_SIZE, IMG_SIZE, 1).astype('float32')
@@ -99,9 +98,10 @@ x_test = test[:, 1:].reshape(test.shape[0], IMG_SIZE, IMG_SIZE, 1).astype('float
 x_test = x_test / 255.0
 y_test = test[:, 0]
 
+EPOCH = 100
 #model = basic_CNN_model()
-model = basic_model()
-# model =smallerVGGNET_model()
+#model = basic_model()
+model =smaller_VGGNET_model()
 
 tf.keras.utils.plot_model(
     model,
