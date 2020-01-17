@@ -57,6 +57,37 @@ def le_net_model():
     model.add(tf.keras.layers.Dense(units=SOFT_MAX, activation = 'softmax'))
     return model
 
+def alex_net_model():
+    model = tf.keras.Sequential(name="alex_net")
+    model.add(tf.keras.layers.Conv2D(32, (3, 3), input_shape=(IMG_SIZE,IMG_SIZE,1)))
+    model.add(tf.keras.layers.BatchNormalization(axis=-1))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.Conv2D(32, (3, 3)))
+    model.add(tf.keras.layers.BatchNormalization(axis=-1))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2)))
+
+    model.add(tf.keras.layers.Conv2D(64,(3, 3)))
+    model.add(tf.keras.layers.BatchNormalization(axis=-1))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.Conv2D(64, (3, 3)))
+    model.add(tf.keras.layers.BatchNormalization(axis=-1))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2)))
+
+    model.add(tf.keras.layers.Flatten())
+
+    # Fully connected layer
+    model.add(tf.keras.layers.Dense(512))
+    model.add(tf.keras.layers.BatchNormalization())
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.Dropout(0.2))
+    model.add(tf.keras.layers.Dense(10))
+    model.add(tf.keras.layers.Dense(units=SOFT_MAX, activation = 'softmax'))
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.summary()
+    return model
+
 
 def smaller_VGGNET_model():
     _model = tf.keras.models.Sequential(name="smaller_VGGNET")
@@ -110,11 +141,12 @@ x_test = test[:, 1:].reshape(test.shape[0], IMG_SIZE, IMG_SIZE, 1).astype('float
 x_test = x_test / 255.0
 y_test = test[:, 0]
 
-EPOCH = 100
+EPOCH = 10
 #model = basic_CNN_model()
 #model = basic_model()
 #model =smaller_VGGNET_model()
-model = le_net_model()
+#model = le_net_model()
+model = alex_net_model()
 
 tf.keras.utils.plot_model(
     model,
