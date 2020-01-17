@@ -45,6 +45,18 @@ def basic_model():
         tf.keras.layers.Dense(SOFT_MAX, activation='softmax')
     ])
 
+def le_net_model():
+    model = tf.keras.Sequential(name="le_net_model")
+    model.add(tf.keras.layers.Conv2D(filters=6, kernel_size=(3, 3), activation='relu', input_shape=(IMG_SIZE,IMG_SIZE,1)))
+    model.add(tf.keras.layers.AveragePooling2D())
+    model.add(tf.keras.layers.Conv2D(filters=16, kernel_size=(3, 3), activation='relu'))
+    model.add(tf.keras.layers.AveragePooling2D())
+    model.add(tf.keras.layers.Flatten())
+    model.add(tf.keras.layers.Dense(units=120, activation='relu'))
+    model.add(tf.keras.layers.Dense(units=84, activation='relu'))
+    model.add(tf.keras.layers.Dense(units=SOFT_MAX, activation = 'softmax'))
+    return model
+
 
 def smaller_VGGNET_model():
     _model = tf.keras.models.Sequential(name="smaller_VGGNET")
@@ -101,7 +113,8 @@ y_test = test[:, 0]
 EPOCH = 100
 #model = basic_CNN_model()
 #model = basic_model()
-model =smaller_VGGNET_model()
+#model =smaller_VGGNET_model()
+model = le_net_model()
 
 tf.keras.utils.plot_model(
     model,
