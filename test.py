@@ -141,7 +141,7 @@ x_test = test[:, 1:].reshape(test.shape[0], IMG_SIZE, IMG_SIZE, 1).astype('float
 x_test = x_test / 255.0
 y_test = test[:, 0]
 
-EPOCH = 10
+EPOCH = 30
 #model = basic_CNN_model()
 #model = basic_model()
 #model =smaller_VGGNET_model()
